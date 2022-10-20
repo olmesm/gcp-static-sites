@@ -1,7 +1,13 @@
-example.com:
-  deploy_group_name: example.com
-site-2.example.com:
-  expires: 2
-site-3.example.com:
-  expires: 2
-  deploy_group_name: example.com
+radically.digital:
+  deploy_group_name: &main main-deploy-group
+development.radically.digital:
+  deploy_group_name: *main
+shiba.radically.digital:
+  deploy_group_name: *main
+  expires: &dog-days 7
+greyhound.radically.digital:
+  deploy_group_name: *main
+  expires: *dog-days
+poodle.radically.digital:
+  deploy_group_name: *main
+  expires: *dog-days

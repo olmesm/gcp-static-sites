@@ -33,7 +33,7 @@ The output will be the following:
       └── domain-records.<site-name>.txt    # Zones file. Includes records for https://github.com/olmesm/domain-records tool.
 ```
 
-## Troubleshooting
+## Troubleshooting
 
 If experiencing domain verification errors; you likely need to add the terraform service account to the domain verification owners.
 
@@ -57,22 +57,14 @@ curl -sL https://raw.githubusercontent.com/olmesm/odd-scripts/main/shell/asdf-in
 cp .env.example .env
 # ...and fill out the values in the .env
 
-# Export GCP_PROJECT details
+# Setup GCP project
 source <(curl -sL https://raw.githubusercontent.com/olmesm/odd-scripts/main/shell/env-export.sh)
 
-# FIRST RUN ONLY: Create a new GCP Terraform service account
-sh ./scripts/create-service-account.sh [GCP_PROJECT_ID] [ACCOUNT_NAME]
-# ie sh ./scripts/create-service-account.sh example-website
+# Create service account token
+sh scripts/create-service-account-token.sh
 
 # Setup local shell
 source <(curl -sL https://raw.githubusercontent.com/olmesm/odd-scripts/main/shell/env-export.sh)
-
-# FIRST RUN ONLY: Setup credentials
-sh ./scripts/decode-service-account-from-env.sh
-
-# FIRST RUN ONLY: Create state bucket and update main.tf
-sh scripts/create-terraform-state-bucket.sh [GCP_PROJECT_ID] [BUCKET_NAME]
-# ie sh scripts/create-terraform-state-bucket.sh
 
 terraform init
 terraform plan

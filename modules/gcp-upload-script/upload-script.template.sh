@@ -1,4 +1,6 @@
 #!/bin/bash
+
+set -e
 %{ if keep_template_comments == true }
     # Note this script makes use of escape sequences.
     # 
@@ -30,6 +32,6 @@ fi
 
 echo "[info] Uploading files from $${UPLOAD_DIRECTORY} to $${SITE}"
 
-gsutil rsync -R -d $${UPLOAD_DIRECTORY} gs://$${SITE}
+gsutil -m rsync -R -d $${UPLOAD_DIRECTORY} gs://$${SITE}
 
 echo "[info] Completed uploading to $${SITE}"

@@ -1,6 +1,6 @@
 terraform {
   backend "gcs" {
-    bucket = "tf-state-gcp-static-sites"
+    bucket = "tf-state-rad-website-infrastructure-c0d136"
     prefix = "terraform/cloudflare_state"
   }
 }
