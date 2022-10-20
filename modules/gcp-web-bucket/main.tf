@@ -124,7 +124,7 @@ resource "local_file" "output_record" {
 
 ${local.full_domain}.	1	IN	CNAME	c.storage.googleapis.com.
 EOF
-  filename = "${path.root}/output/${local.safe_name}/records/domain-records.txt"
+  filename = "${path.root}/output/records/domain-records.${local.safe_name}.txt"
 }
 
 output "bucket_name" {

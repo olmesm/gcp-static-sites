@@ -15,14 +15,12 @@
 # Example if build directory is `build` then
 #   sh ./upload-script.sh build
 
-# This script requires the accompanying service account
-#   from `.env.service-account` or `service-account.json`to be available.
-# See `.env.service-account` for more.
+# This script requires the service account info
+#   from `.env.${service_name}.service-account` to be set as environment variables.
+# See `.env.${service_name}.service-account` for more.
 
 UPLOAD_DIRECTORY="$${1:-dist}"
 SITE="$${2:-${gcp_bucket}}"
-
-echo "[info] Uploading files from $${UPLOAD_DIRECTORY} to $${SITE}"
 
 TEST_COMMAND=`gsutil --version &>/dev/null`
 if [[ $? -ne 0 ]]; then
@@ -30,11 +28,8 @@ if [[ $? -ne 0 ]]; then
  exit 1
 fi
 
+echo "[info] Uploading files from $${UPLOAD_DIRECTORY} to $${SITE}"
+
 gsutil rsync -R -d $${UPLOAD_DIRECTORY} gs://$${SITE}
 
 echo "[info] Completed uploading to $${SITE}"
-
-%{ if expires != null }
-echo "[info] The bucket has an expiry set."
-echo "[info] The content will automatically be deleted in ${expires} day${expires != "1" ? "s" : ""}."
-%{ endif }

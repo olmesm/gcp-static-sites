@@ -1,3 +1,7 @@
 example.com:
-dev.example.com:
+  deploy_group_name: example.com
+site-2.example.com:
   expires: 2
+site-3.example.com:
+  expires: 2
+  deploy_group_name: example.com
