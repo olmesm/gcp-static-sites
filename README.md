@@ -26,11 +26,11 @@ The output will be the following:
 
 ```
 ./output
-  └── example.com
-      ├── service-account.json  # Service account with bucket writing permissions.
-      ├── .env.service-account  # Base64 encoded service account with bucket writing permissions. Contains usage information.
-      ├── domain-records.txt    # Zones file. Includes records for https://github.com/olmesm/domain-records tool.
-      └── upload-script.sh      # Script to facilitate static site deploy in pipelines.
+  ├── scripts
+      ├── .env.<deploy-group or site-name>.service-account  # Base64 encoded service account with bucket writing permissions. Contains usage information.
+      └── upload-script.<site-name>.sh      # Script to facilitate static site deploy in pipelines.
+  └── records
+      └── domain-records.<site-name>.txt    # Zones file. Includes records for https://github.com/olmesm/domain-records tool.
 ```
 
 ## Troubleshooting
