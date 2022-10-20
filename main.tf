@@ -25,13 +25,15 @@ provider "google" {
 
 locals {
   yaml_values = yamldecode(file("${path.module}/sites.yaml"))
-  map_list = { for k, v in local.yaml_values : k => merge({
-    location         = "EU"
-    main_page_suffix = "index.html"
-    not_found_page   = "404.html"
-    expires          = null
-    allow_destroy    = null
-  }, v) }
+  map_list = { for key, values in local.yaml_values : key => merge({
+    location          = "EU"
+    main_page_suffix  = "index.html"
+    not_found_page    = "404.html"
+    deploy_group_name = key
+
+    expires       = null
+    allow_destroy = null
+  }, values) }
 }
 
 resource "google_project_service" "cloudresourcemanager" {
@@ -60,4 +62,20 @@ module "web_bucket" {
     google_project_service.cloudresourcemanager,
     google_project_service.iam
   ]
+}
+
+locals {
+  service_accounts = transpose({ for key, values in module.web_bucket : values["bucket_name"] =>
+    [replace(local.map_list[key]["deploy_group_name"], ".", "-")]
+  })
+}
+
+module "upload_script" {
+  source = "./modules/gcp-upload-script"
+
+  for_each = local.service_accounts
+
+  project                    = var.google_project_name
+  service_name               = each.key
+  google_storage_bucket_list = each.value
 }

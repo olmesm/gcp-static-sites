@@ -12,6 +12,7 @@ Add to `./sites.yaml`. Properties marked as optional have default values below.
 
 ```yaml
 example.com:
+  deploy_group_name: # optional name to group deploy credentials. Creates a shared service account for sites with same `deploy_group_name`
   main_page_suffix: "index.html" # optional
   not_found_page: "404.html" # optional
   location: "EU" # optional https://cloud.google.com/storage/docs/locations#location-mr
@@ -25,11 +26,11 @@ The output will be the following:
 
 ```
 ./output
-  └── example.com
-      ├── service-account.json  # Service account with bucket writing permissions.
-      ├── .env.service-account  # Base64 encoded service account with bucket writing permissions. Contains usage information.
-      ├── domain-records.txt    # Zones file. Includes records for https://github.com/olmesm/domain-records tool.
-      └── upload-script.sh      # Script to facilitate static site deploy in pipelines.
+  ├── scripts
+      ├── .env.<deploy-group or site-name>.service-account  # Base64 encoded service account with bucket writing permissions. Contains usage information.
+      └── upload-script.<site-name>.sh      # Script to facilitate static site deploy in pipelines.
+  └── records
+      └── domain-records.<site-name>.txt    # Zones file. Includes records for https://github.com/olmesm/domain-records tool.
 ```
 
 ## Troubleshooting
@@ -66,10 +67,10 @@ sh ./scripts/create-service-account.sh [GCP_PROJECT_ID] [ACCOUNT_NAME]
 # Setup local shell
 source <(curl -sL https://raw.githubusercontent.com/olmesm/odd-scripts/main/shell/env-export.sh)
 
-# Setup credentials
+# FIRST RUN ONLY: Setup credentials
 sh ./scripts/decode-service-account-from-env.sh
 
-# Create state bucket
+# FIRST RUN ONLY: Create state bucket and update main.tf
 sh scripts/create-terraform-state-bucket.sh [GCP_PROJECT_ID] [BUCKET_NAME]
 # ie sh scripts/create-terraform-state-bucket.sh
 
