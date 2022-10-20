@@ -48,10 +48,7 @@ variable "expires" {
 }
 
 locals {
-  max_length      = 28
-  sa_prefix       = "dply-"
-  safe_name       = replace(var.name, ".", "-")
-  safe_name_short = substr(local.safe_name, 0, local.max_length - length(local.sa_prefix))
+  safe_name = replace(var.name, ".", "-")
 
   _url        = split(".", var.name)
   _domain     = slice(local._url, length(local._url) - 2, length(local._url))
@@ -89,38 +86,12 @@ resource "google_storage_bucket" "default" {
   }
 }
 
-resource "google_service_account" "service_account" {
-  project    = var.project
-  account_id = "${local.sa_prefix}${local.safe_name_short}"
-}
-
-resource "google_storage_bucket_iam_binding" "service_account" {
-  bucket = google_storage_bucket.default.name
-  role   = "roles/storage.objectAdmin"
-  members = [
-    "serviceAccount:${google_service_account.service_account.email}",
-  ]
-}
-
 resource "google_storage_bucket_iam_binding" "public" {
   bucket = google_storage_bucket.default.name
   role   = "roles/storage.objectViewer"
   members = [
     "allUsers",
   ]
-}
-
-resource "google_service_account_key" "key" {
-  service_account_id = google_service_account.service_account.name
-}
-
-resource "local_file" "output_script" {
-  content = templatefile("${path.module}/upload-script.template.sh", {
-    gcp_bucket             = google_storage_bucket.default.name
-    keep_template_comments = false
-    expires = var.expires
-  })
-  filename = "${path.root}/output/${local.safe_name}/upload-script.sh"
 }
 
 resource "local_file" "output_record" {
@@ -153,23 +124,10 @@ resource "local_file" "output_record" {
 
 ${local.full_domain}.	1	IN	CNAME	c.storage.googleapis.com.
 EOF
-  filename = "${path.root}/output/${local.safe_name}/domain-records.txt"
+  filename = "${path.root}/output/${local.safe_name}/records/domain-records.txt"
 }
 
-resource "local_sensitive_file" "output_service_account" {
-  content  = base64decode(google_service_account_key.key.private_key)
-  filename = "${path.root}/output/${local.safe_name}/service-account.json"
-}
-
-resource "local_sensitive_file" "output_service_account_env_file" {
-  content  = <<EOF
-# Add the following variables to your env and 
-#   use the script https://github.com/olmesm/odd-scripts/blob/main/shell/gcp-service-account-base64-decode-from-env.sh
-#   to facilitate the deploy. 
-# See in use example https://github.com/olmesm/domain-records/blob/main/.github/workflows/main.yaml
-
-BASE64_GOOGLE_APPLICATION_CREDENTIALS=${google_service_account_key.key.private_key}
-GOOGLE_APPLICATION_CREDENTIALS=tmp/service-account.json
-EOF
-  filename = "${path.root}/output/${local.safe_name}/.env.service-account"
+output "bucket_name" {
+  value       = google_storage_bucket.default.name
+  description = "Created bucket name"
 }

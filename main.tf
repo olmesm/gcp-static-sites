@@ -61,3 +61,13 @@ module "web_bucket" {
     google_project_service.iam
   ]
 }
+
+module "upload_script" {
+  source = "./modules/gcp-upload-script"
+
+  for_each = local.map_list
+
+  name                       = each.key
+  project                    = var.google_project_name
+  google_storage_bucket_name = module.web_bucket[each.key].bucket_name
+}
