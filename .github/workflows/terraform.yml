@@ -24,6 +24,9 @@ jobs:
     - name: Set terraform credentials location
       run:
         export GOOGLE_APPLICATION_CREDENTIALS=./service-account.json
+    - name: Print env
+      run:
+        printenv
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v1
     - name: Terraform Init
