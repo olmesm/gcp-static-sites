@@ -23,7 +23,8 @@ jobs:
         gpg --quiet --batch --yes --decrypt --passphrase="${{ secrets.GCP_CREDENTIALS_ENCRYPTION_KEY }}" --output ./service-account.json service-account.json.gpg
     - name: Set terraform credentials location
       run:
-        export GOOGLE_APPLICATION_CREDENTIALS=./service-account.json
+        GOOGLE_APPLICATION_CREDENTIALS=./service-account.json
+        echo "GOOGLE_APPLICATION_CREDENTIALS=${GOOGLE_APPLICATION_CREDENTIALS}" >> $GITHUB_ENV
     - name: Print env
       run:
         printenv

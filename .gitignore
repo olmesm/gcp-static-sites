@@ -8,3 +8,5 @@ tmp
 .terraform
 
 output
+
+service-account.json
