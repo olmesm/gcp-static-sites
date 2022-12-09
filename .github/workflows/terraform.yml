@@ -24,9 +24,9 @@ jobs:
     - name: Set terraform credentials location
       run:
         echo "GOOGLE_APPLICATION_CREDENTIALS=./service-account.json" >> $GITHUB_ENV
-    - name: Print env
+    - name: Set project name
       run:
-        printenv
+        echo "TF_VAR_google_project_name=${{ secrets.TF_VAR_google_project_name }}" >> $GITHUB_ENV
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v1
     - name: Terraform Init
