@@ -20,7 +20,7 @@ jobs:
       uses: actions/checkout@v3
     - name: Decrypt GPG file
       run: |
-        gpg --quiet --batch --yes --decrypt --passphrase="${{ secrets.GCP_CREDENTIALS_ENCRYPTION_KEY }}" --output /tmp/service-account.json service-account.json.gpg
+        gpg --quiet --batch --yes --decrypt --passphrase="${{ secrets.GCP_CREDENTIALS_ENCRYPTION_KEY }}" --output ./tmp/service-account.json service-account.json.gpg
     - name: Set terraform credentials location
       run:
         export GOOGLE_APPLICATION_CREDENTIALS=./tmp/service-account.json
