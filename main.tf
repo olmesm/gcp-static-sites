@@ -5,15 +5,6 @@ terraform {
   }
 }
 
-terraform {
-  required_providers {
-    gcp = {
-      source  = "hashicorp/google"
-      version = "4.26.0"
-    }
-  }
-}
-
 variable "google_project_name" {
   description = "TF_VAR_google_project_name"
   type        = string
