@@ -1,8 +1,10 @@
-# GCP Static Sites
+# RAD Website Infrastructure
 
-Create a static site bucket in GCP.
+RAD website is hosted in a static bucket on GCP. The creation of these buckets is handled by Terraform.
 
-**NOTE** GCP Cloud Storage doesn't support custom domains with HTTPS on its own. You will need to couple this with [Cloudflare for reverse proxying](https://www.cloudflare.com/en-gb/learning/cdn/glossary/reverse-proxy/) (See [olmesm/domain-records](https://github.com/olmesm/domain-records)) or create an [HTTPS Loadbalancer](https://cloud.google.com/storage/docs/hosting-static-website)
+Terraform also creates a service account which is used to authenticate the [RAD website project](https://github.com/radically-digital/rad-website) to deploy changes to the buckets.
+
+**NOTE** GCP Cloud Storage doesn't support custom domains with HTTPS on its own. You will need to couple this with [Cloudflare for reverse proxying](https://www.cloudflare.com/en-gb/learning/cdn/glossary/reverse-proxy/) (See [radically-digital/domain-records](https://github.com/radically-digital/rad-domain-records)) or create an [HTTPS Loadbalancer](https://cloud.google.com/storage/docs/hosting-static-website)
 
 **NOTE** Similar to above, [DNS does not support creating a CNAME record on a root domain](https://cloud.google.com/storage/docs/hosting-static-website-http#cname). [Consider CNAME flattening](https://blog.cloudflare.com/introducing-cname-flattening-rfc-compliant-cnames-at-a-domains-root/) or modifying for a [loadbalancer](https://cloud.google.com/storage/docs/hosting-static-website).
 
@@ -22,26 +24,18 @@ example.com:
   logging: #TODO https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/storage_bucket#nested_logging
 ```
 
-The output will be the following:
-
-```
-./output
-  ├── scripts
-      ├── .env.<deploy-group or site-name>.service-account  # Base64 encoded service account with bucket writing permissions. Contains usage information.
-      └── upload-script.<site-name>.sh      # Script to facilitate static site deploy in pipelines.
-  └── records
-      └── domain-records.<site-name>.txt    # Zones file. Includes records for https://github.com/olmesm/domain-records tool.
-```
-
 ## Deployment
 
-#### Terraform Plan
+Please rely on the CICD process in Github Actions to deploy infrastructure changes.
 
-Open a pull request and the pipeline will run. This will run a `terraform plan` step, where changes can be checked.
+### Terraform Plan - New PR
 
-#### Terraform Apply
+Make changes to the Terraform code and open a pull request and the pipeline will run. This will run a `terraform plan` step, where changes can be checked and verified.
 
-Merge/push to main and any changes on the pipeline will be mergeed to main.
+### Terraform Apply - Merge to main
+
+Merge/push to main and the pipeline will apply any planned changes to infrastructure.
+**ONLY RUN IF PLAN HAS BEEN CHECKED**
 
 ## Development
 
@@ -127,7 +121,23 @@ export $(xargs < .env)
 ```bash
 terraform init
 terraform plan
+```
+If you want to apply these changes it is recommended to use the Github actions CICD pipeline.
+However to apply locally run.
+```bash
 terraform apply
+```
+
+### After run
+
+Terraform will output the following files:
+
+```
+./output
+  ├── serviceAccount
+      ├── .env.<deploy-group or site-name>.service-account  # Base64 encoded service account with bucket writing permissions. Contains usage information.
+  └── records
+      └── domain-records.<site-name>.txt    # Zones file. Includes records for https://github.com/radically-digital/rad-domain-records.
 ```
 
 ## Troubleshooting
