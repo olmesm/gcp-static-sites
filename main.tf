@@ -65,14 +65,15 @@ module "web_bucket" {
   ]
 }
 
+
 locals {
   service_accounts = transpose({ for key, values in module.web_bucket : values["bucket_name"] =>
     [replace(local.map_list[key]["deploy_group_name"], ".", "-")]
   })
 }
 
-module "upload_script" {
-  source = "./modules/gcp-upload-script"
+module "service_account" {
+  source = "./modules/gcp-service-account"
 
   for_each = local.service_accounts
 

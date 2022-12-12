@@ -1,12 +1,3 @@
-terraform {
-  required_providers {
-    gcp = {
-      source  = "hashicorp/google"
-      version = "4.26.0"
-    }
-  }
-}
-
 variable "service_name" {
   description = "The safe name of the bucket - only A-z, 0-9, -"
   type        = string
@@ -15,6 +6,12 @@ variable "service_name" {
 variable "project" {
   description = "The name of the project"
   type        = string
+}
+
+variable "code_project" {
+  description = "The name of the project that is being deployed"
+  type        = string
+  default = "Rad Website"
 }
 
 variable "google_storage_bucket_list" {
@@ -32,6 +29,8 @@ locals {
 resource "google_service_account" "service_account" {
   project    = var.project
   account_id = local.service_account_name
+  display_name = "${var.code_project} Service Account"
+  description = "${var.code_project} Service Account"
 }
 
 resource "google_storage_bucket_iam_binding" "service_account" {
@@ -48,27 +47,14 @@ resource "google_service_account_key" "key" {
   service_account_id = google_service_account.service_account.name
 }
 
-resource "local_file" "output_script" {
-  for_each = var.google_storage_bucket_list
-
-  content = templatefile("${path.module}/upload-script.template.sh", {
-    gcp_bucket             = each.key
-    keep_template_comments = false
-    service_name           = var.service_name
-  })
-
-  filename = "${path.root}/output/scripts/upload-script.${replace(each.key, ".", "-")}.sh"
-}
-
 resource "local_sensitive_file" "output_service_account_env_file" {
   content  = <<EOF
-# Add the following variables to your env and 
-#   use the script https://github.com/olmesm/odd-scripts/blob/main/shell/gcp-service-account-base64-decode-from-env.sh
-#   to facilitate the deploy. 
-# See in use example https://github.com/olmesm/domain-records/blob/main/.github/workflows/main.yaml
+# The following secrets are added to the github secrets for the rad website
+# https://github.com/radically-digital/rad-website/settings/secrets/actions
+# to be used when deploying. 
 
 BASE64_GOOGLE_APPLICATION_CREDENTIALS=${google_service_account_key.key.private_key}
 GOOGLE_APPLICATION_CREDENTIALS=tmp/service-account.json
 EOF
-  filename = "${path.root}/output/scripts/.env.${var.service_name}.service-account"
+  filename = "${path.root}/output/serviceAccount/.env.${var.service_name}.service-account"
 }

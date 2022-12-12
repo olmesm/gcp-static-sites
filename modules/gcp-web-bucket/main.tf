@@ -1,12 +1,3 @@
-terraform {
-  required_providers {
-    gcp = {
-      source  = "hashicorp/google"
-      version = "4.26.0"
-    }
-  }
-}
-
 variable "name" {
   description = "The name of the bucket"
   type        = string
@@ -96,7 +87,7 @@ resource "google_storage_bucket_iam_binding" "public" {
 
 resource "local_file" "output_record" {
   content  = <<EOF
-;; For use with https://github.com/olmesm/domain-records
+;; For use with https://github.com/radically-digital/rad-domain-records
 ;; the following is a valid yaml record
 ;;
 ;;   ${local.domain}:
