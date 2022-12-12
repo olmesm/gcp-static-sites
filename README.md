@@ -45,43 +45,86 @@ Merge/push to main and any changes on the pipeline will be mergeed to main.
 
 ## Development
 
+To run the project locally follow these steps.
+
 Requires:
+* Terraform and terraform version manager
+* Google-cloud-sdk - for creating authentication option 2
+* Access on your gsuite account to the project on GCP - for creating authentication option 2
 
+### Copy env
+Copy the .env.example file
 ```bash
-# Copy the .env.example file
 cp .env.example .env
-# ...and fill out the values in the .env
+```
 
-# Install google cloud SDK using brew or asdf
-## brew
+### Authentication
+
+#### Option 1 - decode service-account.json.gpg
+
+service-account.json.gpg contains credentials required for authentication. To decode request the passphrase to be shared to you via lastpass by one of the team and run:
+```bash
+gpg --quiet --batch --yes --decrypt --passphrase="{{PASSPHRASE}}" --output ./service-account.json service-account.json.gpg
+```
+
+#### Option 2 - create own service-account.json
+
+Copy the .env.example file
+```bash
+cp .env.example .env
+```
+
+Install google cloud SDK using brew or asdf
+
+brew
+```bash
 brew install --cask google-cloud-sdk
-## asdf
+```
+
+asdf
+```bash
 asdf plugin add gcloud https://github.com/jthegedus/asdf-gcloud
 asdf install gcloud latest
 asdf global gcloud latest
+```
 
-# Create service account token - if fails check below
+Create google service account token - if this fails check below
+```bash
 sh scripts/create-service-account-token.sh
+```
 
-## Might need an asdf python install to work with gcloud if above script fails and using asdf for google-sdk
+If you are using asdf google sdk and the above  failed with a python error, you need an asdf python install to work with gcloud.
+```bash
 asdf plugin-add python
 asdf install python latest
+```
 
-# Install terraform using a version manager asdf or tfenv
-## asdf
+### Terraform version manager
+
+Install terraform using a version manager asdf or tfenv
+
+asdf
+```bash
 asdf plugin-add terraform https://github.com/Banno/asdf-hashicorp.git
 asdf list-all terraform
 asdf install terraform 1.3.6
 asdf global terraform 1.3.6
-## tfenv
+```
+
+tfenv
+```bash
 brew install tfenv
 tfenv install 1.3.6
 tfenv use 1.3.6
+```
 
-# Export env
+### Export env
+```bash
 export $(xargs < .env)
+```
 
-# Run terraform
+### Run terraform
+```bash
 terraform init
 terraform plan
 terraform apply
