@@ -14,9 +14,11 @@ gcloud iam service-accounts keys create $OUTPUT \
   --iam-account="$ACCOUNT_NAME" \
   --key-file-type=json
 
-gcloud services enable cloudresourcemanager.googleapis.com --project $PROJECT_ID
-
-echo "\nBASE64_GOOGLE_APPLICATION_CREDENTIALS=$(cat $OUTPUT | base64)" >> .env
-echo "GOOGLE_APPLICATION_CREDENTIALS=$OUTPUT" >> .env
-
-echo "[info] Please note you may be required to verify the domain and add the service account email ($ACCOUNT_NAME) to the owners list in https://www.google.com/webmasters/verification/details?hl=en&domain=<your.site>"
+if test -f "$OUTPUT"; then
+  gcloud services enable cloudresourcemanager.googleapis.com --project $PROJECT_ID
+  echo "\nBASE64_GOOGLE_APPLICATION_CREDENTIALS=$(cat $OUTPUT | base64)" >> .env
+  echo "GOOGLE_APPLICATION_CREDENTIALS=$OUTPUT" >> .env
+  echo "[info] Please note you may be required to verify the domain and add the service account email ($ACCOUNT_NAME) to the owners list in https://www.google.com/webmasters/verification/details?hl=en&domain=<your.site>"
+else
+  echo "Failed to create file, check gcloud config."
+fi

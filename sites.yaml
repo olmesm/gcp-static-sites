@@ -1,13 +1,18 @@
 radically.digital:
   deploy_group_name: &main main-deploy-group
+  location: &london "EUROPE-WEST2"
 development.radically.digital:
   deploy_group_name: *main
+  location: *london
 shiba.radically.digital:
   deploy_group_name: *main
   expires: &dog-days 7
+  location: *london
 greyhound.radically.digital:
   deploy_group_name: *main
   expires: *dog-days
+  location: *london
 poodle.radically.digital:
   deploy_group_name: *main
   expires: *dog-days
+  location: *london

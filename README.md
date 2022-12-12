@@ -33,6 +33,60 @@ The output will be the following:
       └── domain-records.<site-name>.txt    # Zones file. Includes records for https://github.com/olmesm/domain-records tool.
 ```
 
+## Deployment
+
+#### Terraform Plan
+
+Open a pull request and the pipeline will run. This will run a `terraform plan` step, where changes can be checked.
+
+#### Terraform Apply
+
+Merge/push to main and any changes on the pipeline will be mergeed to main.
+
+## Development
+
+Requires:
+
+```bash
+# Copy the .env.example file
+cp .env.example .env
+# ...and fill out the values in the .env
+
+# Install google cloud SDK using brew or asdf
+## brew
+brew install --cask google-cloud-sdk
+## asdf
+asdf plugin add gcloud https://github.com/jthegedus/asdf-gcloud
+asdf install gcloud latest
+asdf global gcloud latest
+
+# Create service account token - if fails check below
+sh scripts/create-service-account-token.sh
+
+## Might need an asdf python install to work with gcloud if above script fails and using asdf for google-sdk
+asdf plugin-add python
+asdf install python latest
+
+# Install terraform using a version manager asdf or tfenv
+## asdf
+asdf plugin-add terraform https://github.com/Banno/asdf-hashicorp.git
+asdf list-all terraform
+asdf install terraform 1.3.6
+asdf global terraform 1.3.6
+## tfenv
+brew install tfenv
+tfenv install 1.3.6
+tfenv use 1.3.6
+
+# Export env
+export $(xargs < .env)
+
+# Run terraform
+terraform init
+terraform plan
+terraform apply
+```
+
 ## Troubleshooting
 
 If experiencing domain verification errors; you likely need to add the terraform service account to the domain verification owners.
@@ -42,31 +96,3 @@ googleapi: Error 403: Another user owns the domain EXAMPLE.COM or a parent domai
 ```
 
 Go to https://www.google.com/webmasters/verification/verification?domain=EXAMPLE.COM and add the service account (likely `tf-sa-gcp-static-sites@$GCP_PROJECT.iam.gserviceaccount.com`) email to the domain owners.
-
-## Development
-
-Requires:
-
-- [asdf](https://asdf-vm.com)
-
-```bash
-# Install asdf dependencies
-curl -sL https://raw.githubusercontent.com/olmesm/odd-scripts/main/shell/asdf-install.sh | bash
-
-# Copy the .env.example file
-cp .env.example .env
-# ...and fill out the values in the .env
-
-# Setup GCP project
-source <(curl -sL https://raw.githubusercontent.com/olmesm/odd-scripts/main/shell/env-export.sh)
-
-# Create service account token
-sh scripts/create-service-account-token.sh
-
-# Setup local shell
-source <(curl -sL https://raw.githubusercontent.com/olmesm/odd-scripts/main/shell/env-export.sh)
-
-terraform init
-terraform plan
-terraform apply
-```

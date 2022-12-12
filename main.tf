@@ -12,6 +12,7 @@ terraform {
       version = "4.26.0"
     }
   }
+  required_version = "~> 1.3.6"
 }
 
 variable "google_project_name" {
