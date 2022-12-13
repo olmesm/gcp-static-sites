@@ -1,18 +1,23 @@
 radically.digital:
   deploy_group_name: &main main-deploy-group
   location: &london "EUROPE-WEST2"
+  not_found_page: &temp_not_found "index.html"
 development.radically.digital:
   deploy_group_name: *main
   location: *london
+  not_found_page: *temp_not_found
 shiba.radically.digital:
   deploy_group_name: *main
   expires: &dog-days 7
   location: *london
+  not_found_page: *temp_not_found
 greyhound.radically.digital:
   deploy_group_name: *main
   expires: *dog-days
   location: *london
+  not_found_page: *temp_not_found
 poodle.radically.digital:
   deploy_group_name: *main
   expires: *dog-days
   location: *london
+  not_found_page: *temp_not_found
